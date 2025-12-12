@@ -455,6 +455,8 @@
       );
     }
 
+    console.log("ReactDOMClient:", typeof ReactDOMClient, "lucideReact:", typeof lucideReact);
+
     // Render the app
     const root = ReactDOMClient.createRoot(document.getElementById('root'));
     root.render(<RaRConsole />);
