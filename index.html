@@ -4,11 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LeanBuild RaR Console</title>
+  
+  <!-- React 18 - UMD builds -->
   <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom-client.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel standalone for JSX transformation -->
+  <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script crossorigin src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.production.min.js"></script>  
+  
+  <!-- Lucide Icons - using the SVG sprite approach instead of React components -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  
   <script>
     tailwind.config = {
       theme: {
@@ -32,12 +41,10 @@
       background: #f8fafc;
     }
     
-    /* Ensure proper iframe sizing */
     #root {
       min-height: 100vh;
     }
     
-    /* Override default link/button focus for iframe context */
     *:focus {
       outline: 2px solid #06b6d4;
       outline-offset: 2px;
@@ -48,52 +55,66 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
-    const { 
-      AlertTriangle, 
-      Clock, 
-      TrendingDown, 
-      TrendingUp, 
-      Calendar,
-      DollarSign,
-      Eye,
-      Bell,
-      ArrowUp,
-      ArrowDown,
-      CheckCircle2
-    } = lucideReact;
+    const { useState } = React;
 
-    // Utility function for class merging
-    function cn(...classes) {
-      return classes.filter(Boolean).join(' ');
-    }
+    // Icon component that uses inline SVG instead of lucide-react
+    const Icon = ({ name, className = "", size = 24 }) => {
+      const icons = {
+        'trending-up': '<path d="M22 7L13.5 15.5L8.5 10.5L2 17M22 7H16M22 7V13"/>',
+        'dollar-sign': '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+        'eye': '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+        'clock': '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+        'alert-triangle': '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+        'calendar': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+        'bell': '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+        'trending-down': '<path d="m22 17-8.5-8.5-5 5L2 7"/><path d="M16 17h6v-6"/>',
+        'arrow-up': '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
+        'arrow-down': '<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>',
+        'check-circle-2': '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'
+      };
+      
+      return (
+        <svg 
+          className={className} 
+          width={size} 
+          height={size} 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+          dangerouslySetInnerHTML={{ __html: icons[name] || '' }}
+        />
+      );
+    };
 
     // Simplified UI Components
-    const Card = ({ className, children, ...props }) => (
-      <div className={cn("rounded-lg border bg-white shadow-sm", className)} {...props}>
+    const Card = ({ className = "", children }) => (
+      <div className={`rounded-lg border bg-white shadow-sm ${className}`}>
         {children}
       </div>
     );
 
-    const CardHeader = ({ className, children, ...props }) => (
-      <div className={cn("flex flex-col space-y-1.5 p-6", className)} {...props}>
+    const CardHeader = ({ className = "", children }) => (
+      <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>
         {children}
       </div>
     );
 
-    const CardTitle = ({ className, children, ...props }) => (
-      <h3 className={cn("text-2xl font-semibold leading-none tracking-tight", className)} {...props}>
+    const CardTitle = ({ className = "", children }) => (
+      <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>
         {children}
       </h3>
     );
 
-    const CardContent = ({ className, children, ...props }) => (
-      <div className={cn("p-6 pt-0", className)} {...props}>
+    const CardContent = ({ className = "", children }) => (
+      <div className={`p-6 pt-0 ${className}`}>
         {children}
       </div>
     );
 
-    const Badge = ({ className, variant = 'default', children, ...props }) => {
+    const Badge = ({ className = "", variant = 'default', children }) => {
       const variants = {
         default: "bg-blue-100 text-blue-800",
         secondary: "bg-gray-100 text-gray-800",
@@ -102,13 +123,13 @@
       };
       
       return (
-        <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold", variants[variant], className)} {...props}>
+        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variants[variant]} ${className}`}>
           {children}
         </span>
       );
     };
 
-    const Button = ({ className, variant = 'default', size = 'default', children, ...props }) => {
+    const Button = ({ className = "", variant = 'default', size = 'default', children, ...props }) => {
       const variants = {
         default: "bg-blue-600 text-white hover:bg-blue-700",
         outline: "border border-gray-300 bg-white hover:bg-gray-50"
@@ -121,12 +142,7 @@
       
       return (
         <button 
-          className={cn(
-            "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors",
-            variants[variant],
-            sizes[size],
-            className
-          )} 
+          className={`inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors ${variants[variant]} ${sizes[size]} ${className}`}
           {...props}
         >
           {children}
@@ -134,8 +150,8 @@
       );
     };
 
-    const Progress = ({ value = 0, className, ...props }) => (
-      <div className={cn("relative h-4 w-full overflow-hidden rounded-full bg-gray-200", className)} {...props}>
+    const Progress = ({ value = 0, className = "" }) => (
+      <div className={`relative h-4 w-full overflow-hidden rounded-full bg-gray-200 ${className}`}>
         <div 
           className="h-full bg-blue-600 transition-all"
           style={{ width: `${value}%` }}
@@ -143,14 +159,14 @@
       </div>
     );
 
-    const Alert = ({ className, children, ...props }) => (
-      <div className={cn("relative w-full rounded-lg border p-4", className)} {...props}>
+    const Alert = ({ className = "", children }) => (
+      <div className={`relative w-full rounded-lg border p-4 ${className}`}>
         {children}
       </div>
     );
 
-    const AlertDescription = ({ className, children, ...props }) => (
-      <div className={cn("text-sm", className)} {...props}>
+    const AlertDescription = ({ className = "", children }) => (
+      <div className={`text-sm ${className}`}>
         {children}
       </div>
     );
@@ -199,7 +215,7 @@
                     <p className="text-sm text-blue-600 font-medium">Overall RaR Score</p>
                     <p className="text-2xl font-bold text-blue-900">{overallScore}</p>
                   </div>
-                  <TrendingUp className="h-8 w-8 text-blue-600" />
+                  <Icon name="trending-up" className="text-blue-600" size={32} />
                 </div>
                 <Progress value={overallScore} className="mt-2" />
               </CardContent>
@@ -212,10 +228,10 @@
                     <p className="text-sm text-gray-600">Total at Risk</p>
                     <p className="text-2xl font-bold text-red-600">$77.3K</p>
                   </div>
-                  <DollarSign className="h-8 w-8 text-red-500" />
+                  <Icon name="dollar-sign" className="text-red-500" size={32} />
                 </div>
                 <div className="flex items-center mt-2 text-sm">
-                  <ArrowUp className="h-4 w-4 text-red-500 mr-1" />
+                  <Icon name="arrow-up" className="text-red-500 mr-1" size={16} />
                   <span className="text-red-600">+$14K from last week</span>
                 </div>
               </CardContent>
@@ -228,7 +244,7 @@
                     <p className="text-sm text-gray-600">Active Blind Spots</p>
                     <p className="text-2xl font-bold text-orange-600">3</p>
                   </div>
-                  <Eye className="h-8 w-8 text-orange-500" />
+                  <Icon name="eye" className="text-orange-500" size={32} />
                 </div>
                 <Badge variant="secondary" className="mt-2">2 Critical</Badge>
               </CardContent>
@@ -241,10 +257,10 @@
                     <p className="text-sm text-gray-600">Avg Payment Delay</p>
                     <p className="text-2xl font-bold text-yellow-600">47d</p>
                   </div>
-                  <Clock className="h-8 w-8 text-yellow-500" />
+                  <Icon name="clock" className="text-yellow-500" size={32} />
                 </div>
                 <div className="flex items-center mt-2 text-sm">
-                  <ArrowDown className="h-4 w-4 text-green-500 mr-1" />
+                  <Icon name="arrow-down" className="text-green-500 mr-1" size={16} />
                   <span className="text-green-600">-5d improvement</span>
                 </div>
               </CardContent>
@@ -255,10 +271,10 @@
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             
             {/* Panel 1: Cash Flow Blind Spots */}
-            <Card className="col-span-1 md:col-span-1">
+            <Card>
               <CardHeader className="pb-4">
                 <div className="flex items-center space-x-2">
-                  <AlertTriangle className="h-5 w-5 text-orange-500" />
+                  <Icon name="alert-triangle" className="text-orange-500" size={20} />
                   <CardTitle className="text-lg">Cash Flow Blind Spots</CardTitle>
                 </div>
               </CardHeader>
@@ -269,22 +285,22 @@
                   <div className="grid grid-cols-1 gap-2 text-xs">
                     <div className="bg-red-50 border border-red-200 p-2 rounded flex justify-between items-center">
                       <span>AR Aging</span>
-                      <Badge variant="destructive" className="text-xs">Critical</Badge>
+                      <Badge variant="destructive">Critical</Badge>
                     </div>
                     <div className="bg-yellow-50 border border-yellow-200 p-2 rounded flex justify-between items-center">
                       <span>Pending Pay Apps</span>
-                      <Badge variant="secondary" className="text-xs">3 Pending</Badge>
+                      <Badge variant="secondary">3 Pending</Badge>
                     </div>
                     <div className="bg-green-50 border border-green-200 p-2 rounded flex justify-between items-center">
                       <span>Retainage Release</span>
-                      <Badge variant="outline" className="text-xs">On Track</Badge>
+                      <Badge variant="outline">On Track</Badge>
                     </div>
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center space-x-2 mb-3">
-                    <Calendar className="h-4 w-4" />
+                    <Icon name="calendar" size={16} />
                     <div className="text-sm font-medium">Heat Map Calendar</div>
                   </div>
                   
@@ -292,7 +308,7 @@
                     {calendarDays.map((day, index) => (
                       <div key={index} className="text-center">
                         <div className="text-xs text-gray-500 mb-1">{day.day}</div>
-                        <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-medium", getStatusColor(day.status))}>
+                        <div className={`w-8 h-8 rounded flex items-center justify-center text-white text-xs font-medium ${getStatusColor(day.status)}`}>
                           {day.date}
                         </div>
                       </div>
@@ -300,10 +316,12 @@
                   </div>
 
                   <Alert className="border-red-200 bg-red-50">
-                    <AlertTriangle className="h-4 w-4 text-red-600 inline mr-2" />
-                    <AlertDescription className="text-sm inline">
-                      <strong>July 2:</strong> Missing data from Subcontractor X
-                    </AlertDescription>
+                    <div className="flex items-start gap-2">
+                      <Icon name="alert-triangle" className="text-red-600 mt-0.5" size={16} />
+                      <AlertDescription>
+                        <strong>July 2:</strong> Missing data from Subcontractor X
+                      </AlertDescription>
+                    </div>
                   </Alert>
                 </div>
 
@@ -312,7 +330,7 @@
                     Blind Spot Impact: -10 RaR points
                   </div>
                   <Button size="sm" variant="outline">
-                    <Bell className="h-4 w-4 mr-1" />
+                    <Icon name="bell" size={16} className="mr-1" />
                     Set Alert
                   </Button>
                 </div>
@@ -320,10 +338,10 @@
             </Card>
 
             {/* Panel 2: Payment Delays */}
-            <Card className="col-span-1 md:col-span-1">
+            <Card>
               <CardHeader className="pb-4">
                 <div className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5 text-red-500" />
+                  <Icon name="clock" className="text-red-500" size={20} />
                   <CardTitle className="text-lg">Payment Delays</CardTitle>
                 </div>
               </CardHeader>
@@ -336,7 +354,7 @@
                       <CardContent className="p-3">
                         <div className="flex justify-between items-start mb-2">
                           <div className="text-sm font-medium">Invoice #2023-41</div>
-                          <Badge variant="destructive" className="text-xs">61 Days</Badge>
+                          <Badge variant="destructive">61 Days</Badge>
                         </div>
                         <div className="text-lg font-bold text-red-600 mb-2">$63,000</div>
                         <div className="flex justify-between items-center">
@@ -350,7 +368,7 @@
                       <CardContent className="p-3">
                         <div className="flex justify-between items-start mb-2">
                           <div className="text-sm font-medium">Invoice #2023-52</div>
-                          <Badge variant="secondary" className="text-xs">32 Days</Badge>
+                          <Badge variant="secondary">32 Days</Badge>
                         </div>
                         <div className="text-lg font-bold text-yellow-600 mb-2">$14,300</div>
                         <div className="flex justify-between items-center">
@@ -373,11 +391,11 @@
               </CardContent>
             </Card>
 
-            {/* Panel 3: Risk Anticipation Shortfalls */}
-            <Card className="col-span-1 md:col-span-1">
+            {/* Panel 3: Risk Anticipation */}
+            <Card>
               <CardHeader className="pb-4">
                 <div className="flex items-center space-x-2">
-                  <TrendingDown className="h-5 w-5 text-purple-500" />
+                  <Icon name="trending-down" className="text-purple-500" size={20} />
                   <CardTitle className="text-lg">Risk Anticipation</CardTitle>
                 </div>
               </CardHeader>
@@ -386,13 +404,15 @@
                 <div>
                   <div className="text-sm font-medium mb-3">Recent Shortfall</div>
                   <Alert className="border-orange-200 bg-orange-50">
-                    <AlertTriangle className="h-4 w-4 text-orange-600 inline mr-2" />
-                    <AlertDescription className="text-sm inline">
-                      <strong>Retainage Alert:</strong> Fired 12 days too late
-                      <div className="text-xs text-gray-600 mt-1">
-                        Cost: $33,200 in delayed cash flow
-                      </div>
-                    </AlertDescription>
+                    <div className="flex items-start gap-2">
+                      <Icon name="alert-triangle" className="text-orange-600 mt-0.5" size={16} />
+                      <AlertDescription>
+                        <strong>Retainage Alert:</strong> Fired 12 days too late
+                        <div className="text-xs text-gray-600 mt-1">
+                          Cost: $33,200 in delayed cash flow
+                        </div>
+                      </AlertDescription>
+                    </div>
                   </Alert>
                 </div>
 
@@ -436,7 +456,7 @@
 
                 <div className="space-y-2">
                   <Button className="w-full" variant="default">
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                    <Icon name="check-circle-2" size={16} className="mr-2" />
                     Enable Smart Alerts
                   </Button>
                   <Button className="w-full" variant="outline">
@@ -455,7 +475,8 @@
     }
 
     // Render the app
-    const root = ReactDOMClient.createRoot(document.getElementById('root'));
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
     root.render(<RaRConsole />);
   </script>
 </body>
