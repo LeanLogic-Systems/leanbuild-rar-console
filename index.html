@@ -8,7 +8,7 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script crossorigin src="https://unpkg.com/lucide-react@0.487.0/dist/umd/lucide-react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom-client.production.min.js"></script>
   
   <script>
     tailwind.config = {
@@ -456,7 +456,7 @@
     }
 
     // Render the app
-    const root = ReactDOM.createRoot(document.getElementById('root'));
+    const root = ReactDOMClient.createRoot(document.getElementById('root'));
     root.render(<RaRConsole />);
   </script>
 </body>
