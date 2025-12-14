@@ -3,30 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LeanBuild RaR Console</title>
-  
-  <!-- React 18 - UMD builds -->
-  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-  
-  <!-- Babel standalone for JSX transformation -->
-  <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
-  
-  <!-- Tailwind CSS -->
+  <title>LeanBuild™ RaR Console</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Lucide Icons - using the SVG sprite approach instead of React components -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            navy: '#0a1628',
-            purple: '#8e6cfa',
-            cyan: '#06b6d4',
-            amber: '#f59e0b'
+            navy: {
+              900: '#0a1628',
+              800: '#0f1f35',
+              700: '#162a46',
+              600: '#1e3a5f'
+            },
+            cyan: {
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2'
+            },
+            purple: {
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed'
+            },
+            amber: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706'
+            },
+            risk: {
+              critical: '#ef4444',
+              warning: '#f59e0b',
+              elevated: '#fb923c',
+              stable: '#22c55e',
+              optimal: '#06b6d4'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
           }
         }
       }
@@ -34,449 +59,987 @@
   </script>
   
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f8fafc;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #0f1f35 50%, #162a46 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+      overflow-x: hidden;
     }
     
     #root {
       min-height: 100vh;
     }
     
+    /* Animated gradient background */
+    .bg-mesh {
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.08) 0%, transparent 60%);
+    }
+    
+    /* Glassmorphism cards */
+    .glass {
+      background: rgba(15, 31, 53, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .glass-light {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    /* Glowing effects */
+    .glow-cyan {
+      box-shadow: 0 0 40px rgba(6, 182, 212, 0.3), 0 0 80px rgba(6, 182, 212, 0.1);
+    }
+    
+    .glow-purple {
+      box-shadow: 0 0 40px rgba(139, 92, 246, 0.3), 0 0 80px rgba(139, 92, 246, 0.1);
+    }
+    
+    .glow-amber {
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.3), 0 0 80px rgba(245, 158, 11, 0.1);
+    }
+    
+    .glow-red {
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    }
+    
+    /* Score ring animation */
+    @keyframes scoreReveal {
+      from {
+        stroke-dashoffset: 283;
+      }
+    }
+    
+    .score-ring {
+      animation: scoreReveal 1.5s ease-out forwards;
+    }
+    
+    /* Pulse animation for alerts */
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(239, 68, 68, 0.6);
+      }
+    }
+    
+    .pulse-alert {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    /* Slider styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(90deg, #0891b2 0%, #7c3aed 50%, #f59e0b 100%);
+      height: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.4), inset 0 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    input[type="range"]::-webkit-slider-track {
+      height: 8px;
+      background: transparent;
+      border-radius: 4px;
+    }
+    
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      background: transparent;
+      border-radius: 4px;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+      border: 3px solid #0a1628;
+      border-radius: 50%;
+      margin-top: -8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(6, 182, 212, 0.6);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+      border: 3px solid #0a1628;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(6, 182, 212, 0.6);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 30px rgba(6, 182, 212, 0.7);
+    }
+    
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 30px rgba(6, 182, 212, 0.7);
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(6, 182, 212, 0.4);
+      border-radius: 3px;
+    }
+    
+    /* Staggered animations */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-in {
+      animation: fadeSlideUp 0.6s ease-out forwards;
+    }
+    
+    .delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .delay-3 { animation-delay: 0.3s; opacity: 0; }
+    .delay-4 { animation-delay: 0.4s; opacity: 0; }
+    .delay-5 { animation-delay: 0.5s; opacity: 0; }
+    
+    /* Number counter animation */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .count-up {
+      animation: countUp 0.4s ease-out forwards;
+    }
+    
+    /* Risk bar shimmer */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .risk-bar-shimmer {
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.1) 50%, 
+        transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite;
+    }
+    
+    /* Toggle switch */
+    .toggle-track {
+      transition: background-color 0.3s ease;
+    }
+    
+    .toggle-thumb {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    /* Contractor row hover */
+    .contractor-row {
+      transition: all 0.3s ease;
+    }
+    
+    .contractor-row:hover {
+      background: rgba(6, 182, 212, 0.1);
+      transform: translateX(4px);
+    }
+    
+    /* Focus states */
     *:focus {
-      outline: 2px solid #06b6d4;
+      outline: 2px solid rgba(6, 182, 212, 0.6);
       outline-offset: 2px;
+    }
+    
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.4);
     }
   </style>
 </head>
-<body>
+<body class="bg-mesh">
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect, useRef } = React;
 
-    // Icon component that uses inline SVG instead of lucide-react
-    const Icon = ({ name, className = "", size = 24 }) => {
-      const icons = {
-        'trending-up': '<path d="M22 7L13.5 15.5L8.5 10.5L2 17M22 7H16M22 7V13"/>',
-        'dollar-sign': '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
-        'eye': '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
-        'clock': '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
-        'alert-triangle': '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
-        'calendar': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
-        'bell': '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
-        'trending-down': '<path d="m22 17-8.5-8.5-5 5L2 7"/><path d="M16 17h6v-6"/>',
-        'arrow-up': '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
-        'arrow-down': '<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>',
-        'check-circle-2': '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'
-      };
-      
-      return (
-        <svg 
-          className={className} 
-          width={size} 
-          height={size} 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-          dangerouslySetInnerHTML={{ __html: icons[name] || '' }}
-        />
-      );
+    // ===== MOCK DATA =====
+    const portfolioData = [
+      { id: 1, name: "Meridian Construction", score: 42, trend: -8, atRisk: 234000, projects: 4, status: 'critical', daysToDistress: 28 },
+      { id: 2, name: "Summit Builders LLC", score: 58, trend: -3, atRisk: 89000, projects: 6, status: 'warning', daysToDistress: 45 },
+      { id: 3, name: "Apex Commercial GC", score: 67, trend: +2, atRisk: 45000, projects: 3, status: 'elevated', daysToDistress: 67 },
+      { id: 4, name: "Foundation First Inc", score: 78, trend: +5, atRisk: 12000, projects: 5, status: 'stable', daysToDistress: 90 },
+      { id: 5, name: "Cornerstone Projects", score: 84, trend: +1, atRisk: 8500, projects: 2, status: 'optimal', daysToDistress: 120 },
+      { id: 6, name: "BuildRight Tennessee", score: 51, trend: -12, atRisk: 156000, projects: 7, status: 'critical', daysToDistress: 21 },
+      { id: 7, name: "Precision Contracting", score: 71, trend: 0, atRisk: 34000, projects: 4, status: 'elevated', daysToDistress: 58 },
+      { id: 8, name: "Valley View Builders", score: 89, trend: +3, atRisk: 5200, projects: 3, status: 'optimal', daysToDistress: 150 },
+    ];
+
+    const contractorDetailData = {
+      name: "Meridian Construction",
+      score: 42,
+      trend: -8,
+      totalAtRisk: 234000,
+      invoices: [
+        { id: "INV-2024-087", amount: 127000, daysOverdue: 73, client: "Knox County Schools", reason: "Change order dispute", impact: -18 },
+        { id: "INV-2024-112", amount: 63000, daysOverdue: 41, client: "Pellissippi State", reason: "Pending inspection", impact: -9 },
+        { id: "INV-2024-128", amount: 44000, daysOverdue: 28, client: "City of Maryville", reason: "Documentation delay", impact: -5 },
+      ],
+      changeOrders: { pending: 8, avgApprovalDays: 34, unapprovedValue: 89000 },
+      waivers: { missing: 3, conditional: 12, impact: -6 },
+      paymentVelocity: { current: 47, baseline: 32, trend: 'slowing' },
+      signals: [
+        { type: 'critical', message: 'Invoice aging acceleration detected', daysAgo: 3 },
+        { type: 'warning', message: 'Change order backlog exceeds threshold', daysAgo: 7 },
+        { type: 'warning', message: 'Subcontractor payment delays increasing', daysAgo: 12 },
+      ]
     };
 
-    // Simplified UI Components
-    const Card = ({ className = "", children }) => (
-      <div className={`rounded-lg border bg-white shadow-sm ${className}`}>
-        {children}
-      </div>
-    );
+    // ===== UTILITY FUNCTIONS =====
+    function cn(...classes) {
+      return classes.filter(Boolean).join(' ');
+    }
 
-    const CardHeader = ({ className = "", children }) => (
-      <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>
-        {children}
-      </div>
-    );
+    function formatCurrency(value) {
+      if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+      if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+      return `$${value}`;
+    }
 
-    const CardTitle = ({ className = "", children }) => (
-      <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>
-        {children}
-      </h3>
-    );
-
-    const CardContent = ({ className = "", children }) => (
-      <div className={`p-6 pt-0 ${className}`}>
-        {children}
-      </div>
-    );
-
-    const Badge = ({ className = "", variant = 'default', children }) => {
-      const variants = {
-        default: "bg-blue-100 text-blue-800",
-        secondary: "bg-gray-100 text-gray-800",
-        destructive: "bg-red-100 text-red-800",
-        outline: "border border-gray-300 text-gray-700"
+    function getStatusColor(status) {
+      const colors = {
+        critical: 'from-red-500 to-red-600',
+        warning: 'from-amber-500 to-amber-600',
+        elevated: 'from-orange-400 to-orange-500',
+        stable: 'from-green-500 to-green-600',
+        optimal: 'from-cyan-400 to-cyan-500'
       };
+      return colors[status] || colors.stable;
+    }
+
+    function getStatusBg(status) {
+      const colors = {
+        critical: 'bg-red-500/20 border-red-500/30',
+        warning: 'bg-amber-500/20 border-amber-500/30',
+        elevated: 'bg-orange-400/20 border-orange-400/30',
+        stable: 'bg-green-500/20 border-green-500/30',
+        optimal: 'bg-cyan-400/20 border-cyan-400/30'
+      };
+      return colors[status] || colors.stable;
+    }
+
+    function getScoreColor(score) {
+      if (score < 50) return '#ef4444';
+      if (score < 65) return '#f59e0b';
+      if (score < 80) return '#fb923c';
+      return '#22c55e';
+    }
+
+    // ===== COMPONENTS =====
+    
+    // Animated Score Ring
+    function ScoreRing({ score, size = 120, strokeWidth = 10 }) {
+      const radius = (size - strokeWidth) / 2;
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference - (score / 100) * circumference;
+      const color = getScoreColor(score);
       
       return (
-        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variants[variant]} ${className}`}>
-          {children}
-        </span>
-      );
-    };
-
-    const Button = ({ className = "", variant = 'default', size = 'default', children, ...props }) => {
-      const variants = {
-        default: "bg-blue-600 text-white hover:bg-blue-700",
-        outline: "border border-gray-300 bg-white hover:bg-gray-50"
-      };
-      
-      const sizes = {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 px-3 text-sm"
-      };
-      
-      return (
-        <button 
-          className={`inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors ${variants[variant]} ${sizes[size]} ${className}`}
-          {...props}
-        >
-          {children}
-        </button>
-      );
-    };
-
-    const Progress = ({ value = 0, className = "" }) => (
-      <div className={`relative h-4 w-full overflow-hidden rounded-full bg-gray-200 ${className}`}>
-        <div 
-          className="h-full bg-blue-600 transition-all"
-          style={{ width: `${value}%` }}
-        />
-      </div>
-    );
-
-    const Alert = ({ className = "", children }) => (
-      <div className={`relative w-full rounded-lg border p-4 ${className}`}>
-        {children}
-      </div>
-    );
-
-    const AlertDescription = ({ className = "", children }) => (
-      <div className={`text-sm ${className}`}>
-        {children}
-      </div>
-    );
-
-    // Main RaR Console Component
-    function RaRConsole() {
-      const [sliderValue, setSliderValue] = useState(12);
-      const [overallScore, setOverallScore] = useState(73);
-
-      const calculateImpact = () => {
-        const daysEarlier = sliderValue;
-        const cashImpact = Math.round(33200 * (daysEarlier / 12));
-        const scoreImprovement = Math.round(7 * (daysEarlier / 12));
-        return { cashImpact, scoreImprovement };
-      };
-
-      const { cashImpact, scoreImprovement } = calculateImpact();
-
-      const calendarDays = [
-        { day: 'M', date: 1, status: 'good' },
-        { day: 'T', date: 2, status: 'critical' },
-        { day: 'W', date: 3, status: 'warning' },
-        { day: 'T', date: 4, status: 'good' },
-        { day: 'F', date: 5, status: 'good' },
-        { day: 'S', date: 6, status: 'warning' },
-        { day: 'S', date: 7, status: 'good' }
-      ];
-
-      const getStatusColor = (status) => {
-        switch (status) {
-          case 'critical': return 'bg-red-500';
-          case 'warning': return 'bg-yellow-500';
-          case 'good': return 'bg-green-500';
-          default: return 'bg-gray-300';
-        }
-      };
-
-      return (
-        <div className="p-6 space-y-6 bg-gray-50">
-          {/* Summary Header */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-blue-600 font-medium">Overall RaR Score</p>
-                    <p className="text-2xl font-bold text-blue-900">{overallScore}</p>
-                  </div>
-                  <Icon name="trending-up" className="text-blue-600" size={32} />
-                </div>
-                <Progress value={overallScore} className="mt-2" />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Total at Risk</p>
-                    <p className="text-2xl font-bold text-red-600">$77.3K</p>
-                  </div>
-                  <Icon name="dollar-sign" className="text-red-500" size={32} />
-                </div>
-                <div className="flex items-center mt-2 text-sm">
-                  <Icon name="arrow-up" className="text-red-500 mr-1" size={16} />
-                  <span className="text-red-600">+$14K from last week</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Active Blind Spots</p>
-                    <p className="text-2xl font-bold text-orange-600">3</p>
-                  </div>
-                  <Icon name="eye" className="text-orange-500" size={32} />
-                </div>
-                <Badge variant="secondary" className="mt-2">2 Critical</Badge>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Avg Payment Delay</p>
-                    <p className="text-2xl font-bold text-yellow-600">47d</p>
-                  </div>
-                  <Icon name="clock" className="text-yellow-500" size={32} />
-                </div>
-                <div className="flex items-center mt-2 text-sm">
-                  <Icon name="arrow-down" className="text-green-500 mr-1" size={16} />
-                  <span className="text-green-600">-5d improvement</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Main Dashboard */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            
-            {/* Panel 1: Cash Flow Blind Spots */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-2">
-                  <Icon name="alert-triangle" className="text-orange-500" size={20} />
-                  <CardTitle className="text-lg">Cash Flow Blind Spots</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                
-                <div>
-                  <div className="text-sm font-medium mb-3">Accounts Overview</div>
-                  <div className="grid grid-cols-1 gap-2 text-xs">
-                    <div className="bg-red-50 border border-red-200 p-2 rounded flex justify-between items-center">
-                      <span>AR Aging</span>
-                      <Badge variant="destructive">Critical</Badge>
-                    </div>
-                    <div className="bg-yellow-50 border border-yellow-200 p-2 rounded flex justify-between items-center">
-                      <span>Pending Pay Apps</span>
-                      <Badge variant="secondary">3 Pending</Badge>
-                    </div>
-                    <div className="bg-green-50 border border-green-200 p-2 rounded flex justify-between items-center">
-                      <span>Retainage Release</span>
-                      <Badge variant="outline">On Track</Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Icon name="calendar" size={16} />
-                    <div className="text-sm font-medium">Heat Map Calendar</div>
-                  </div>
-                  
-                  <div className="grid grid-cols-7 gap-1 mb-3">
-                    {calendarDays.map((day, index) => (
-                      <div key={index} className="text-center">
-                        <div className="text-xs text-gray-500 mb-1">{day.day}</div>
-                        <div className={`w-8 h-8 rounded flex items-center justify-center text-white text-xs font-medium ${getStatusColor(day.status)}`}>
-                          {day.date}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Alert className="border-red-200 bg-red-50">
-                    <div className="flex items-start gap-2">
-                      <Icon name="alert-triangle" className="text-red-600 mt-0.5" size={16} />
-                      <AlertDescription>
-                        <strong>July 2:</strong> Missing data from Subcontractor X
-                      </AlertDescription>
-                    </div>
-                  </Alert>
-                </div>
-
-                <div className="flex justify-between items-center pt-2 border-t">
-                  <div className="text-xs text-red-600 font-medium">
-                    Blind Spot Impact: -10 RaR points
-                  </div>
-                  <Button size="sm" variant="outline">
-                    <Icon name="bell" size={16} className="mr-1" />
-                    Set Alert
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Panel 2: Payment Delays */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-2">
-                  <Icon name="clock" className="text-red-500" size={20} />
-                  <CardTitle className="text-lg">Payment Delays</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                
-                <div>
-                  <div className="text-sm font-medium mb-3">Overdue Invoices</div>
-                  <div className="space-y-3">
-                    <Card className="border-red-200 bg-red-50">
-                      <CardContent className="p-3">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="text-sm font-medium">Invoice #2023-41</div>
-                          <Badge variant="destructive">61 Days</Badge>
-                        </div>
-                        <div className="text-lg font-bold text-red-600 mb-2">$63,000</div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-gray-600">Owner rejected Line Item 5</span>
-                          <Button size="sm" variant="outline">Follow Up</Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="border-yellow-200 bg-yellow-50">
-                      <CardContent className="p-3">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="text-sm font-medium">Invoice #2023-52</div>
-                          <Badge variant="secondary">32 Days</Badge>
-                        </div>
-                        <div className="text-lg font-bold text-yellow-600 mb-2">$14,300</div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-gray-600">Pending review</span>
-                          <Button size="sm" variant="outline">Contact</Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center pt-2 border-t">
-                  <div className="text-xs text-red-600 font-medium">
-                    Delay Penalty: -6.1 RaR points
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Avg: 47 days
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Panel 3: Risk Anticipation */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-2">
-                  <Icon name="trending-down" className="text-purple-500" size={20} />
-                  <CardTitle className="text-lg">Risk Anticipation</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                
-                <div>
-                  <div className="text-sm font-medium mb-3">Recent Shortfall</div>
-                  <Alert className="border-orange-200 bg-orange-50">
-                    <div className="flex items-start gap-2">
-                      <Icon name="alert-triangle" className="text-orange-600 mt-0.5" size={16} />
-                      <AlertDescription>
-                        <strong>Retainage Alert:</strong> Fired 12 days too late
-                        <div className="text-xs text-gray-600 mt-1">
-                          Cost: $33,200 in delayed cash flow
-                        </div>
-                      </AlertDescription>
-                    </div>
-                  </Alert>
-                </div>
-
-                <div>
-                  <div className="text-sm font-medium mb-3">What If Simulation</div>
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between text-xs text-gray-600 mb-1">
-                        <span>Alert {sliderValue} days earlier</span>
-                        <span>Current: 12 days late</span>
-                      </div>
-                      <input 
-                        type="range"
-                        min="0"
-                        max="30"
-                        value={sliderValue}
-                        onChange={(e) => setSliderValue(parseInt(e.target.value))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                      />
-                    </div>
-
-                    <Card className="bg-green-50 border-green-200">
-                      <CardContent className="p-3">
-                        <div className="text-sm font-medium text-green-800 mb-1">
-                          Projected Impact
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                          <div>
-                            <div className="text-gray-600">RaR Score</div>
-                            <div className="font-bold text-green-600">+{scoreImprovement}</div>
-                          </div>
-                          <div>
-                            <div className="text-gray-600">Cash Impact</div>
-                            <div className="font-bold text-green-600">+${cashImpact.toLocaleString()}</div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Button className="w-full" variant="default">
-                    <Icon name="check-circle-2" size={16} className="mr-2" />
-                    Enable Smart Alerts
-                  </Button>
-                  <Button className="w-full" variant="outline">
-                    Configure Automation
-                  </Button>
-                </div>
-
-                <div className="text-xs text-purple-600 font-medium pt-2 border-t">
-                  Potential RaR Gain: +{scoreImprovement} points
-                </div>
-              </CardContent>
-            </Card>
+        <div className="relative" style={{ width: size, height: size }}>
+          <svg width={size} height={size} className="transform -rotate-90">
+            {/* Background ring */}
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth={strokeWidth}
+            />
+            {/* Score ring */}
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke={color}
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+              className="score-ring"
+              style={{ filter: `drop-shadow(0 0 8px ${color})` }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-3xl font-bold" style={{ color }}>{score}</span>
+            <span className="text-xs text-slate-400 uppercase tracking-wider">RaR Score</span>
           </div>
         </div>
       );
     }
 
-    // Render the app
-    const container = document.getElementById('root');
-    const root = ReactDOM.createRoot(container);
+    // Risk Distribution Bar
+    function RiskDistributionBar({ data }) {
+      const total = data.reduce((sum, d) => sum + d.count, 0);
+      
+      return (
+        <div className="space-y-2">
+          <div className="flex h-3 rounded-full overflow-hidden bg-navy-700">
+            {data.map((segment, i) => (
+              <div
+                key={i}
+                className={cn("h-full transition-all duration-500", segment.color)}
+                style={{ width: `${(segment.count / total) * 100}%` }}
+              />
+            ))}
+          </div>
+          <div className="flex justify-between text-xs">
+            {data.map((segment, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <div className={cn("w-2 h-2 rounded-full", segment.color)} />
+                <span className="text-slate-400">{segment.label}</span>
+                <span className="text-white font-medium">{segment.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Trend Indicator
+    function TrendIndicator({ value, showLabel = true }) {
+      const isPositive = value > 0;
+      const isNeutral = value === 0;
+      
+      return (
+        <div className={cn(
+          "flex items-center gap-1 text-sm font-medium",
+          isPositive ? "text-green-400" : isNeutral ? "text-slate-400" : "text-red-400"
+        )}>
+          {!isNeutral && (
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              {isPositive ? (
+                <path d="M8 4l4 4H9v4H7V8H4l4-4z" />
+              ) : (
+                <path d="M8 12l-4-4h3V4h2v4h3l-4 4z" />
+              )}
+            </svg>
+          )}
+          <span>{isPositive ? '+' : ''}{value}</span>
+          {showLabel && <span className="text-slate-500 text-xs">30d</span>}
+        </div>
+      );
+    }
+
+    // Stat Card
+    function StatCard({ label, value, subValue, icon, trend, variant = 'default', className }) {
+      const variants = {
+        default: 'glass',
+        cyan: 'glass border-cyan-500/30 glow-cyan',
+        purple: 'glass border-purple-500/30 glow-purple',
+        amber: 'glass border-amber-500/30 glow-amber',
+        danger: 'glass border-red-500/30 glow-red'
+      };
+      
+      return (
+        <div className={cn("rounded-xl p-5", variants[variant], className)}>
+          <div className="flex items-start justify-between mb-3">
+            <span className="text-slate-400 text-sm font-medium">{label}</span>
+            {icon}
+          </div>
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="text-2xl font-bold text-white">{value}</div>
+              {subValue && <div className="text-sm text-slate-400 mt-1">{subValue}</div>}
+            </div>
+            {trend !== undefined && <TrendIndicator value={trend} />}
+          </div>
+        </div>
+      );
+    }
+
+    // View Toggle
+    function ViewToggle({ view, onViewChange }) {
+      return (
+        <div className="glass rounded-full p-1 flex">
+          <button
+            onClick={() => onViewChange('portfolio')}
+            className={cn(
+              "px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300",
+              view === 'portfolio' 
+                ? "bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg" 
+                : "text-slate-400 hover:text-white"
+            )}
+          >
+            <span className="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+              Portfolio View
+            </span>
+          </button>
+          <button
+            onClick={() => onViewChange('contractor')}
+            className={cn(
+              "px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300",
+              view === 'contractor'
+                ? "bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg"
+                : "text-slate-400 hover:text-white"
+            )}
+          >
+            <span className="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              Contractor Detail
+            </span>
+          </button>
+        </div>
+      );
+    }
+
+    // Contractor Row (for portfolio view)
+    function ContractorRow({ contractor, onClick, index }) {
+      return (
+        <div 
+          onClick={onClick}
+          className={cn(
+            "contractor-row glass-light rounded-lg p-4 cursor-pointer animate-in",
+            `delay-${Math.min(index + 1, 5)}`
+          )}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* Score indicator */}
+              <div className="relative">
+                <div 
+                  className={cn(
+                    "w-14 h-14 rounded-xl flex items-center justify-center font-bold text-xl",
+                    contractor.status === 'critical' && "bg-red-500/20 text-red-400",
+                    contractor.status === 'warning' && "bg-amber-500/20 text-amber-400",
+                    contractor.status === 'elevated' && "bg-orange-400/20 text-orange-400",
+                    contractor.status === 'stable' && "bg-green-500/20 text-green-400",
+                    contractor.status === 'optimal' && "bg-cyan-400/20 text-cyan-400"
+                  )}
+                >
+                  {contractor.score}
+                </div>
+                {contractor.status === 'critical' && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full pulse-alert" />
+                )}
+              </div>
+              
+              {/* Contractor info */}
+              <div>
+                <div className="font-semibold text-white">{contractor.name}</div>
+                <div className="text-sm text-slate-400 flex items-center gap-3">
+                  <span>{contractor.projects} active projects</span>
+                  <span>•</span>
+                  <span className={cn(
+                    contractor.daysToDistress < 30 ? "text-red-400" : 
+                    contractor.daysToDistress < 60 ? "text-amber-400" : "text-slate-400"
+                  )}>
+                    {contractor.daysToDistress}d to potential distress
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-6">
+              {/* Revenue at Risk */}
+              <div className="text-right">
+                <div className="text-lg font-bold text-red-400">{formatCurrency(contractor.atRisk)}</div>
+                <div className="text-xs text-slate-500">at risk</div>
+              </div>
+              
+              {/* Trend */}
+              <TrendIndicator value={contractor.trend} showLabel={false} />
+              
+              {/* Arrow */}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-500">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Signal Timeline Item
+    function SignalItem({ signal, index }) {
+      const colors = {
+        critical: 'border-red-500 bg-red-500/10',
+        warning: 'border-amber-500 bg-amber-500/10',
+        info: 'border-cyan-500 bg-cyan-500/10'
+      };
+      
+      return (
+        <div className={cn(
+          "border-l-2 pl-4 py-2 animate-in",
+          colors[signal.type] || colors.info,
+          `delay-${Math.min(index + 1, 5)}`
+        )}>
+          <div className="text-sm text-white">{signal.message}</div>
+          <div className="text-xs text-slate-500 mt-1">{signal.daysAgo} days ago</div>
+        </div>
+      );
+    }
+
+    // What-If Simulator
+    function WhatIfSimulator({ initialValue = 12 }) {
+      const [sliderValue, setSliderValue] = useState(initialValue);
+      
+      const cashImpact = Math.round(33200 * (sliderValue / 12));
+      const scoreImprovement = Math.round(7 * (sliderValue / 12));
+      
+      return (
+        <div className="space-y-4">
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-400">Alert earlier by</span>
+            <span className="text-cyan-400 font-semibold">{sliderValue} days</span>
+          </div>
+          
+          <input 
+            type="range"
+            min="0"
+            max="30"
+            value={sliderValue}
+            onChange={(e) => setSliderValue(parseInt(e.target.value))}
+            className="w-full h-2"
+          />
+          
+          <div className="grid grid-cols-2 gap-3">
+            <div className="glass-light rounded-lg p-3 text-center">
+              <div className="text-2xl font-bold text-green-400">+{scoreImprovement}</div>
+              <div className="text-xs text-slate-400">Bonding Posture</div>
+            </div>
+            <div className="glass-light rounded-lg p-3 text-center">
+              <div className="text-2xl font-bold text-green-400">+${cashImpact.toLocaleString()}</div>
+              <div className="text-xs text-slate-400">Cash Protected</div>
+            </div>
+          </div>
+          
+          <div className="text-xs text-center text-slate-500 pt-1">
+            Signal financial discipline to surety partners
+          </div>
+        </div>
+      );
+    }
+
+    // ===== MAIN VIEWS =====
+
+    // Portfolio View (Insurer Perspective)
+    function PortfolioView({ onSelectContractor }) {
+      const portfolioScore = Math.round(portfolioData.reduce((sum, c) => sum + c.score, 0) / portfolioData.length);
+      const totalAtRisk = portfolioData.reduce((sum, c) => sum + c.atRisk, 0);
+      const criticalCount = portfolioData.filter(c => c.status === 'critical').length;
+      const warningCount = portfolioData.filter(c => c.status === 'warning').length;
+      
+      const riskDistribution = [
+        { label: 'Critical', count: criticalCount, color: 'bg-red-500' },
+        { label: 'Warning', count: warningCount, color: 'bg-amber-500' },
+        { label: 'Elevated', count: portfolioData.filter(c => c.status === 'elevated').length, color: 'bg-orange-400' },
+        { label: 'Stable', count: portfolioData.filter(c => c.status === 'stable' || c.status === 'optimal').length, color: 'bg-green-500' },
+      ];
+
+      return (
+        <div className="space-y-6">
+          {/* Portfolio Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="glass rounded-xl p-6 glow-cyan animate-in delay-1">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-slate-400 text-sm mb-1">Portfolio Health</div>
+                  <div className="text-4xl font-bold text-white">{portfolioScore}</div>
+                  <div className="text-sm text-slate-400 mt-1">Avg RaR Score</div>
+                </div>
+                <ScoreRing score={portfolioScore} size={80} strokeWidth={6} />
+              </div>
+            </div>
+            
+            <StatCard
+              label="Total Revenue at Risk"
+              value={formatCurrency(totalAtRisk)}
+              subValue="Across all contractors"
+              variant="danger"
+              className="animate-in delay-2"
+              icon={
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              }
+            />
+            
+            <StatCard
+              label="Contractors Monitored"
+              value={portfolioData.length}
+              subValue={`${criticalCount} need attention`}
+              variant="purple"
+              className="animate-in delay-3"
+              icon={
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              }
+            />
+            
+            <StatCard
+              label="Early Warning Signals"
+              value="12"
+              subValue="Last 30 days"
+              variant="amber"
+              trend={-3}
+              className="animate-in delay-4"
+              icon={
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              }
+            />
+          </div>
+
+          {/* Risk Distribution */}
+          <div className="glass rounded-xl p-6 animate-in delay-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Risk Distribution</h3>
+              <span className="text-sm text-slate-400">Click contractor to drill down</span>
+            </div>
+            <RiskDistributionBar data={riskDistribution} />
+          </div>
+
+          {/* Contractor List */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-white">Bonded Contractors</h3>
+              <div className="flex gap-2">
+                <button className="glass-light px-3 py-1.5 rounded-lg text-sm text-slate-400 hover:text-white transition-colors">
+                  Sort by Risk ↓
+                </button>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              {portfolioData
+                .sort((a, b) => a.score - b.score)
+                .map((contractor, index) => (
+                  <ContractorRow
+                    key={contractor.id}
+                    contractor={contractor}
+                    index={index}
+                    onClick={() => onSelectContractor(contractor)}
+                  />
+                ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Contractor Detail View (GC Perspective)
+    function ContractorDetailView({ contractor, onBack }) {
+      const data = contractorDetailData;
+      
+      return (
+        <div className="space-y-6">
+          {/* Header with Back Button */}
+          <div className="flex items-center justify-between animate-in delay-1">
+            <button 
+              onClick={onBack}
+              className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              Back to Portfolio
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <span className={cn(
+                "px-3 py-1 rounded-full text-sm font-medium",
+                getStatusBg(contractor?.status || 'critical')
+              )}>
+                {(contractor?.status || 'critical').toUpperCase()}
+              </span>
+            </div>
+          </div>
+
+          {/* Contractor Header */}
+          <div className="glass rounded-xl p-6 glow-cyan animate-in delay-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-white">{data.name}</h2>
+                <p className="text-slate-400 mt-1">Bonded SMB General Contractor • Knoxville, TN</p>
+              </div>
+              <div className="flex items-center gap-6">
+                <div className="text-right">
+                  <div className="text-sm text-slate-400">Total at Risk</div>
+                  <div className="text-3xl font-bold text-red-400">{formatCurrency(data.totalAtRisk)}</div>
+                </div>
+                <ScoreRing score={data.score} size={100} strokeWidth={8} />
+              </div>
+            </div>
+          </div>
+
+          {/* Risk Factor Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              label="Invoice Aging"
+              value="73 days"
+              subValue="Avg overdue"
+              variant="danger"
+              trend={-12}
+              className="animate-in delay-3"
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              }
+            />
+            
+            <StatCard
+              label="Change Orders"
+              value="8 pending"
+              subValue={formatCurrency(data.changeOrders.unapprovedValue)}
+              variant="amber"
+              className="animate-in delay-3"
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="12" y1="18" x2="12" y2="12" />
+                  <line x1="9" y1="15" x2="15" y2="15" />
+                </svg>
+              }
+            />
+            
+            <StatCard
+              label="Lien Waivers"
+              value="3 missing"
+              subValue="12 conditional"
+              variant="purple"
+              className="animate-in delay-4"
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              }
+            />
+            
+            <StatCard
+              label="Payment Velocity"
+              value="47 days"
+              subValue="vs 32d baseline"
+              variant="cyan"
+              trend={-15}
+              className="animate-in delay-4"
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+              }
+            />
+          </div>
+
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Overdue Invoices */}
+            <div className="lg:col-span-2 glass rounded-xl p-6 animate-in delay-5">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                Overdue Invoices
+              </h3>
+              
+              <div className="space-y-3">
+                {data.invoices.map((invoice, index) => (
+                  <div 
+                    key={invoice.id}
+                    className={cn(
+                      "glass-light rounded-lg p-4 border-l-4",
+                      invoice.daysOverdue > 60 ? "border-red-500" : 
+                      invoice.daysOverdue > 30 ? "border-amber-500" : "border-orange-400"
+                    )}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-3">
+                          <span className="font-mono text-sm text-cyan-400">{invoice.id}</span>
+                          <span className={cn(
+                            "px-2 py-0.5 rounded text-xs font-medium",
+                            invoice.daysOverdue > 60 ? "bg-red-500/20 text-red-400" : 
+                            invoice.daysOverdue > 30 ? "bg-amber-500/20 text-amber-400" : "bg-orange-400/20 text-orange-400"
+                          )}>
+                            {invoice.daysOverdue} days overdue
+                          </span>
+                        </div>
+                        <div className="text-slate-400 text-sm mt-1">{invoice.client}</div>
+                        <div className="text-slate-500 text-xs mt-1">{invoice.reason}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xl font-bold text-white">{formatCurrency(invoice.amount)}</div>
+                        <div className="text-red-400 text-sm">{invoice.impact} RaR impact</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Signal Timeline & Simulator */}
+            <div className="space-y-6">
+              {/* Early Warning Signals */}
+              <div className="glass rounded-xl p-6 animate-in delay-5">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  Signal Timeline
+                </h3>
+                
+                <div className="space-y-3">
+                  {data.signals.map((signal, index) => (
+                    <SignalItem key={index} signal={signal} index={index} />
+                  ))}
+                </div>
+              </div>
+
+              {/* What-If Simulator */}
+              <div className="glass rounded-xl p-6 glow-purple animate-in delay-5">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  What-If Simulator
+                </h3>
+                
+                <WhatIfSimulator />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ===== MAIN APP =====
+    function RaRConsole() {
+      const [view, setView] = useState('portfolio');
+      const [selectedContractor, setSelectedContractor] = useState(null);
+
+      const handleSelectContractor = (contractor) => {
+        setSelectedContractor(contractor);
+        setView('contractor');
+      };
+
+      const handleBackToPortfolio = () => {
+        setSelectedContractor(null);
+        setView('portfolio');
+      };
+
+      return (
+        <div className="min-h-screen p-6 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 animate-in">
+              <div className="flex items-center gap-4">
+                {/* LeanBuild Logo Mark */}
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 via-purple-500 to-amber-500 flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7v10l10 5 10-5V7L12 2z" stroke="white" strokeWidth="1.5" fill="none"/>
+                    <path d="M12 22V12M2 7l10 5 10-5" stroke="white" strokeWidth="1.5"/>
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold">
+                    <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">LeanBuild</span><span className="text-cyan-400">™</span> <span className="text-slate-400 font-normal">RaR Console</span>
+                  </h1>
+                  <p className="text-sm text-slate-500">Revenue at Risk Intelligence</p>
+                </div>
+              </div>
+              
+              <ViewToggle view={view} onViewChange={(v) => {
+                setView(v);
+                if (v === 'portfolio') setSelectedContractor(null);
+              }} />
+            </div>
+
+            {/* Main Content */}
+            {view === 'portfolio' ? (
+              <PortfolioView onSelectContractor={handleSelectContractor} />
+            ) : (
+              <ContractorDetailView 
+                contractor={selectedContractor} 
+                onBack={handleBackToPortfolio}
+              />
+            )}
+
+            {/* Footer */}
+            <div className="mt-12 pt-6 border-t border-white/10">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-slate-500">
+                <div>LeanBuild™ by LeanLogic Systems, LLC • Patent Pending</div>
+                <div className="text-xs text-slate-600 text-center">Protecting contractor cash flow and bonding strength through early risk visibility</div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  Live Demo Mode
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Render
+    const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<RaRConsole />);
   </script>
 </body>
