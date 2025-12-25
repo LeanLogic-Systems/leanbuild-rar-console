@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LeanBuild™ RaR Console - Construction Lender Demo</title>
+  <title>LeanBuild™ Monitoring Console - Construction Lender Demo</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -42,11 +42,11 @@
               600: '#d97706'
             },
             risk: {
-              critical: '#ef4444',
-              warning: '#f59e0b',
-              elevated: '#fb923c',
-              stable: '#22c55e',
-              optimal: '#06b6d4'
+              critical: '#a855f7',
+              warning: '#38bdf8',
+              elevated: '#60a5fa',
+              stable: '#94a3b8',
+              optimal: '#cbd5e1'
             }
           },
           fontFamily: {
@@ -320,9 +320,9 @@
       waivers: { missing: 3, conditional: 12, impact: -6 },
       paymentVelocity: { current: 47, baseline: 32, trend: 'slowing' },
       signals: [
-        { type: 'critical', message: 'Invoice aging acceleration detected', daysAgo: 3 },
-        { type: 'warning', message: 'Change order backlog exceeds threshold', daysAgo: 7 },
-        { type: 'warning', message: 'Subcontractor payment delays increasing', daysAgo: 12 },
+        { type: 'critical', message: 'Invoice aging increased vs prior baseline', daysAgo: 3 },
+        { type: 'warning', message: 'Change order backlog increased vs prior baseline', daysAgo: 7 },
+        { type: 'warning', message: 'Sub payment timing slowed vs prior baseline', daysAgo: 12 },
       ]
     };
 
@@ -339,11 +339,11 @@
 
     function getStatusColor(status) {
       const colors = {
-        critical: 'from-red-500 to-red-600',
-        warning: 'from-amber-500 to-amber-600',
-        elevated: 'from-orange-400 to-orange-500',
-        stable: 'from-green-500 to-green-600',
-        optimal: 'from-cyan-400 to-cyan-500'
+        critical: 'from-purple-500 to-purple-600',
+        warning: 'from-sky-500 to-sky-600',
+        elevated: 'from-blue-500 to-blue-600',
+        stable: 'from-slate-400 to-slate-500',
+        optimal: 'from-slate-300 to-slate-400'
       };
       return colors[status] || colors.stable;
     }
@@ -357,6 +357,22 @@
         optimal: 'bg-cyan-400/20 border-cyan-400/30'
       };
       return colors[status] || colors.stable;
+    }
+
+    function getAttentionLabel(status) {
+      switch (status) {
+        case 'critical':
+          return 'ATTENTION RECOMMENDED';
+        case 'warning':
+          return 'REVIEW SUGGESTED';
+        case 'elevated':
+          return 'MONITOR';
+        case 'stable':
+        case 'optimal':
+          return 'NO MATERIAL CHANGE';
+        default:
+          return 'MONITOR';
+      }
     }
 
     function getScoreColor(score) {
@@ -404,13 +420,13 @@
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-3xl font-bold" style={{ color }}>{score}</span>
-            <span className="text-xs text-slate-400 uppercase tracking-wider">Health Index</span>
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Observed</span>
           </div>
         </div>
       );
     }
 
-    // Risk Distribution Bar
+    // Change Distribution Bar
     function RiskDistributionBar({ data }) {
       const total = data.reduce((sum, d) => sum + d.count, 0);
       
@@ -571,18 +587,13 @@
                 <div className="text-sm text-slate-400 flex items-center gap-3">
                   <span>{contractor.projects} active projects</span>
                   <span>•</span>
-                  <span className={cn(
-                    contractor.daysToDistress < 30 ? "text-red-400" : 
-                    contractor.daysToDistress < 60 ? "text-amber-400" : "text-slate-400"
-                  )}>
-                    {contractor.daysToDistress}d to potential distress
-                  </span>
+                  <span className="text-slate-400">change vs 60-day baseline</span>
                 </div>
               </div>
             </div>
             
             <div className="flex items-center gap-6">
-              {/* Revenue at Risk */}
+              {/* Exposure Under Observation */}
               <div className="text-right">
                 <div className="text-lg font-bold text-red-400">{formatCurrency(contractor.atRisk)}</div>
                 <div className="text-xs text-slate-500">at risk</div>
@@ -601,11 +612,11 @@
       );
     }
 
-    // Signal Timeline Item
+    // Observed Changes Item
     function SignalItem({ signal, index }) {
       const colors = {
-        critical: 'border-red-500 bg-red-500/10',
-        warning: 'border-amber-500 bg-amber-500/10',
+        critical: 'border-purple-500 bg-purple-500/10',
+        warning: 'border-sky-500 bg-sky-500/10',
         info: 'border-cyan-500 bg-cyan-500/10'
       };
       
@@ -621,46 +632,7 @@
       );
     }
 
-    // What-If Simulator
-    function WhatIfSimulator({ initialValue = 12 }) {
-      const [sliderValue, setSliderValue] = useState(initialValue);
-      
-      const cashImpact = Math.round(33200 * (sliderValue / 12));
-      const scoreImprovement = Math.round(7 * (sliderValue / 12));
-      
-      return (
-        <div className="space-y-4">
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-400">Alert earlier by</span>
-            <span className="text-cyan-400 font-semibold">{sliderValue} days</span>
-          </div>
-          
-          <input 
-            type="range"
-            min="0"
-            max="30"
-            value={sliderValue}
-            onChange={(e) => setSliderValue(parseInt(e.target.value))}
-            className="w-full h-2"
-          />
-          
-          <div className="grid grid-cols-2 gap-3">
-            <div className="glass-light rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-green-400">+{scoreImprovement}</div>
-              <div className="text-xs text-slate-400">Bonding Posture</div>
-            </div>
-            <div className="glass-light rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-green-400">+${cashImpact.toLocaleString()}</div>
-              <div className="text-xs text-slate-400">Cash Protected</div>
-            </div>
-          </div>
-          
-          <div className="text-xs text-center text-slate-500 pt-1">
-            Signal financial discipline to surety partners
-          </div>
-        </div>
-      );
-    }
+
 
     // ===== MAIN VIEWS =====
 
@@ -684,14 +656,14 @@
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="glass rounded-xl p-6 glow-cyan animate-in delay-1">
               <div className="flex flex-col items-center justify-center text-center">
-                <div className="text-slate-400 text-sm mb-2">Portfolio Health</div>
+                <div className="text-slate-400 text-sm mb-2">Portfolio Status (Observed)</div>
                 <div className="text-5xl font-bold text-white mb-2">{portfolioScore}</div>
-                <div className="text-sm text-slate-400">Avg Health Index</div>
+                <div className="text-sm text-slate-400">Baseline-relative summary</div>
               </div>
             </div>
             
             <StatCard
-              label="Total Revenue at Risk"
+              label="Exposure Under Observation"
               value={formatCurrency(totalAtRisk)}
               subValue="Across all contractors"
               variant="danger"
@@ -719,14 +691,14 @@
             />
             
             <StatCard
-              label="Early Warning Signals"
+              label="Behavioral Changes Observed"
               value="12"
               subValue="Last 30 days"
               variant="amber"
               trend={-3}
               className="animate-in delay-4"
               icon={
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2">
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                   <line x1="12" y1="9" x2="12" y2="13" />
                   <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -735,10 +707,10 @@
             />
           </div>
 
-          {/* Risk Distribution */}
+          {/* Change Distribution */}
           <div className="glass rounded-xl p-6 animate-in delay-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Risk Distribution</h3>
+              <h3 className="text-lg font-semibold text-white">Change Distribution</h3>
               <span className="text-sm text-slate-400">Click contractor to drill down</span>
             </div>
             <RiskDistributionBar data={riskDistribution} />
@@ -750,7 +722,7 @@
               <h3 className="text-lg font-semibold text-slate-900 drop-shadow-sm">Construction Borrowers</h3>
               <div className="flex gap-2">
                 <button className="glass-light px-3 py-1.5 rounded-lg text-sm text-slate-400 hover:text-cyan-400 transition-colors">
-                  Sort by Risk ↓
+                  Sort by Attention ↓
                 </button>
               </div>
             </div>
@@ -791,16 +763,8 @@
             </button>
             
             <div className="flex items-center gap-3">
-              <span className={cn(
-                "px-3 py-1 rounded-full text-sm font-medium border",
-                contractor?.status === 'critical' && "bg-red-500/20 border-red-500/30 text-red-700",
-                contractor?.status === 'warning' && "bg-amber-500/20 border-amber-500/30 text-amber-700",
-                contractor?.status === 'elevated' && "bg-orange-400/20 border-orange-400/30 text-orange-700",
-                contractor?.status === 'stable' && "bg-green-500/20 border-green-500/30 text-green-700",
-                contractor?.status === 'optimal' && "bg-cyan-400/20 border-cyan-400/30 text-cyan-700",
-                !contractor?.status && "bg-red-500/20 border-red-500/30 text-red-700"
-              )}>
-                {(contractor?.status || 'critical').toUpperCase()}
+              <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-white/5 border border-white/10 text-slate-200">
+                {getAttentionLabel(contractor?.status)}
               </span>
             </div>
           </div>
@@ -814,7 +778,7 @@
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <div className="text-sm text-slate-400">Total at Risk</div>
+                  <div className="text-sm text-slate-400">Observed Exposure (Illustrative)</div>
                   <div className="text-3xl font-bold text-red-400">{formatCurrency(data.totalAtRisk)}</div>
                 </div>
                 <ScoreRing score={data.score} size={100} strokeWidth={8} />
@@ -848,7 +812,7 @@
               variant="amber"
               className="animate-in delay-3"
               icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                   <polyline points="14 2 14 8 20 8" />
                   <line x1="12" y1="18" x2="12" y2="12" />
@@ -925,7 +889,7 @@
                       </div>
                       <div className="text-right">
                         <div className="text-xl font-bold text-white">{formatCurrency(invoice.amount)}</div>
-                        <div className="text-red-400 text-sm">{invoice.impact} RaR impact</div>
+                        <div className="text-slate-400 text-sm">Observed friction noted</div>
                       </div>
                     </div>
                   </div>
@@ -933,17 +897,17 @@
               </div>
             </div>
 
-            {/* Signal Timeline & Simulator */}
+            {/* Observed Changes & Simulator */}
             <div className="space-y-6">
-              {/* Early Warning Signals */}
+              {/* Behavioral Changes Observed */}
               <div className="glass rounded-xl p-6 animate-in delay-5">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                     <line x1="12" y1="9" x2="12" y2="13" />
                     <line x1="12" y1="17" x2="12.01" y2="17" />
                   </svg>
-                  Signal Timeline
+                  Observed Changes
                 </h3>
                 
                 <div className="space-y-3">
@@ -953,18 +917,23 @@
                 </div>
               </div>
 
-              {/* What-If Simulator */}
+              {/* Notes */}
               <div className="glass rounded-xl p-6 glow-purple animate-in delay-5">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                    <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                    <path d="M9 8h6" />
+                    <path d="M9 12h6" />
+                    <path d="M9 16h6" />
                   </svg>
-                  What-If Simulator
+                  Notes
                 </h3>
-                
-                <WhatIfSimulator />
+
+                <div className="text-sm text-slate-400 leading-relaxed">
+                  Use this view to guide outreach cadence and request updated documentation when needed.
+                  LeanBuild highlights <span className="text-slate-300">directional change vs the borrower&#39;s baseline</span>,
+                  without scoring creditworthiness or recommending decisions.
+                </div>
               </div>
             </div>
           </div>
@@ -994,9 +963,10 @@
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 animate-in">
               <div>
                 <h1 className="text-2xl font-bold">
-                  <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">LeanBuild</span><span className="text-cyan-400">™</span> <span className="text-slate-400 font-normal">RaR Console</span>
+                  <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">LeanBuild</span><span className="text-cyan-400">™</span> <span className="text-slate-400 font-normal">Monitoring Console</span>
                 </h1>
-                <p className="text-sm text-slate-500">Revenue at Risk Intelligence</p>
+                <p className="text-sm text-slate-500">Behavioral visibility between financial statements (read-only)</p>
+                <p className="text-xs text-slate-600 mt-1">This view is read-only and does not score, predict, or recommend decisions.</p>
               </div>
               
               <ViewToggle view={view} onViewChange={(v) => {
@@ -1019,7 +989,7 @@
             <div className="mt-12 pt-6 border-t border-white/10">
               <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-slate-500">
                 <div>LeanBuild™ by LeanLogic Systems, LLC • Patent Pending</div>
-                <div className="text-xs text-slate-600 text-center">Earlier visibility into borrower stress for construction lenders</div>
+                <div className="text-xs text-slate-600 text-center">Visibility into borrower behavior between financial statements</div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   Live Demo Mode
