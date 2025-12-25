@@ -683,13 +683,10 @@
           {/* Portfolio Summary */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="glass rounded-xl p-6 glow-cyan animate-in delay-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-slate-400 text-sm mb-1">Portfolio Health</div>
-                  <div className="text-4xl font-bold text-white">{portfolioScore}</div>
-                  <div className="text-sm text-slate-400 mt-1">Avg Health Index</div>
-                </div>
-                <ScoreRing score={portfolioScore} size={80} strokeWidth={6} />
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="text-slate-400 text-sm mb-2">Portfolio Health</div>
+                <div className="text-5xl font-bold text-white mb-2">{portfolioScore}</div>
+                <div className="text-sm text-slate-400">Avg Health Index</div>
               </div>
             </div>
             
@@ -753,7 +750,7 @@
               <h3 className="text-lg font-semibold text-slate-900 drop-shadow-sm">Construction Borrowers</h3>
               <div className="flex gap-2">
                 <button className="glass-light px-3 py-1.5 rounded-lg text-sm text-slate-400 hover:text-cyan-400 transition-colors">
-                  Sort by Risk â†“
+                  Sort by Risk ↓
                 </button>
               </div>
             </div>
@@ -795,8 +792,13 @@
             
             <div className="flex items-center gap-3">
               <span className={cn(
-                "px-3 py-1 rounded-full text-sm font-medium",
-                getStatusBg(contractor?.status || 'critical')
+                "px-3 py-1 rounded-full text-sm font-medium border",
+                contractor?.status === 'critical' && "bg-red-500/20 border-red-500/30 text-red-700",
+                contractor?.status === 'warning' && "bg-amber-500/20 border-amber-500/30 text-amber-700",
+                contractor?.status === 'elevated' && "bg-orange-400/20 border-orange-400/30 text-orange-700",
+                contractor?.status === 'stable' && "bg-green-500/20 border-green-500/30 text-green-700",
+                contractor?.status === 'optimal' && "bg-cyan-400/20 border-cyan-400/30 text-cyan-700",
+                !contractor?.status && "bg-red-500/20 border-red-500/30 text-red-700"
               )}>
                 {(contractor?.status || 'critical').toUpperCase()}
               </span>
