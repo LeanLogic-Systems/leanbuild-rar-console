@@ -404,7 +404,7 @@
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-3xl font-bold" style={{ color }}>{score}</span>
-            <span className="text-xs text-slate-400 uppercase tracking-wider">RaR Score</span>
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Health Index</span>
           </div>
         </div>
       );
@@ -567,7 +567,7 @@
               
               {/* Contractor info */}
               <div>
-                <div className="font-semibold text-white drop-shadow-md">{contractor.name}</div>
+                <div className="font-semibold text-slate-900 drop-shadow-sm">{contractor.name}</div>
                 <div className="text-sm text-slate-400 flex items-center gap-3">
                   <span>{contractor.projects} active projects</span>
                   <span>•</span>
@@ -687,7 +687,7 @@
                 <div>
                   <div className="text-slate-400 text-sm mb-1">Portfolio Health</div>
                   <div className="text-4xl font-bold text-white">{portfolioScore}</div>
-                  <div className="text-sm text-slate-400 mt-1">Avg RaR Score</div>
+                  <div className="text-sm text-slate-400 mt-1">Avg Health Index</div>
                 </div>
                 <ScoreRing score={portfolioScore} size={80} strokeWidth={6} />
               </div>
@@ -750,7 +750,7 @@
           {/* Contractor List */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white drop-shadow-lg">Construction Borrowers</h3>
+              <h3 className="text-lg font-semibold text-slate-900 drop-shadow-sm">Construction Borrowers</h3>
               <div className="flex gap-2">
                 <button className="glass-light px-3 py-1.5 rounded-lg text-sm text-slate-400 hover:text-cyan-400 transition-colors">
                   Sort by Risk â†“
