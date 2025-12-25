@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LeanBuild™ RaR Console</title>
+  <title>LeanBuild™ RaR Console - Construction Lender Demo</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -570,7 +570,7 @@
                 <div className="font-semibold text-white drop-shadow-md">{contractor.name}</div>
                 <div className="text-sm text-slate-400 flex items-center gap-3">
                   <span>{contractor.projects} active projects</span>
-                  <span>•</span>
+                  <span>â€¢</span>
                   <span className={cn(
                     contractor.daysToDistress < 30 ? "text-red-400" : 
                     contractor.daysToDistress < 60 ? "text-amber-400" : "text-slate-400"
@@ -664,7 +664,7 @@
 
     // ===== MAIN VIEWS =====
 
-    // Portfolio View (Insurer Perspective)
+    // Portfolio View (Lender Perspective)
     function PortfolioView({ onSelectContractor }) {
       const portfolioScore = Math.round(portfolioData.reduce((sum, c) => sum + c.score, 0) / portfolioData.length);
       const totalAtRisk = portfolioData.reduce((sum, c) => sum + c.atRisk, 0);
@@ -750,10 +750,10 @@
           {/* Contractor List */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white drop-shadow-lg">Bonded Contractors</h3>
+              <h3 className="text-lg font-semibold text-white drop-shadow-lg">Construction Borrowers</h3>
               <div className="flex gap-2">
                 <button className="glass-light px-3 py-1.5 rounded-lg text-sm text-slate-400 hover:text-cyan-400 transition-colors">
-                  Sort by Risk ↓
+                  Sort by Risk â†“
                 </button>
               </div>
             </div>
@@ -775,7 +775,7 @@
       );
     }
 
-    // Contractor Detail View (GC Perspective)
+    // Contractor Detail View (Borrower Detail for Lender)
     function ContractorDetailView({ contractor, onBack }) {
       const data = contractorDetailData;
       
@@ -808,7 +808,7 @@
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-white">{data.name}</h2>
-                <p className="text-slate-400 mt-1">Bonded SMB General Contractor • Knoxville, TN</p>
+                <p className="text-slate-400 mt-1">Bonded SMB General Contractor â€¢ Knoxville, TN</p>
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-right">
@@ -1000,7 +1000,7 @@
                 </div>
                 <div>
                   <h1 className="text-xl font-bold">
-                    <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">LeanBuild</span><span className="text-cyan-400">™</span> <span className="text-slate-400 font-normal">RaR Console</span>
+                    <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">LeanBuild</span><span className="text-cyan-400">â„¢</span> <span className="text-slate-400 font-normal">RaR Console</span>
                   </h1>
                   <p className="text-sm text-slate-500">Revenue at Risk Intelligence</p>
                 </div>
@@ -1025,8 +1025,8 @@
             {/* Footer */}
             <div className="mt-12 pt-6 border-t border-white/10">
               <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-slate-500">
-                <div>LeanBuild™ by LeanLogic Systems, LLC • Patent Pending</div>
-                <div className="text-xs text-slate-600 text-center">Protecting contractor cash flow and bonding strength through early risk visibility</div>
+                <div>LeanBuildâ„¢ by LeanLogic Systems, LLC â€¢ Patent Pending</div>
+                <div className="text-xs text-slate-600 text-center">Earlier visibility into borrower stress for construction lenders</div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   Live Demo Mode
